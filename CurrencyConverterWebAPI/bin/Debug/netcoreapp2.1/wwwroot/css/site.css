@@ -1,0 +1,39 @@
+﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification\ 
+for details on configuring this project to bundle and minify static web assets. */
+body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+}
+
+/* Wrapping element */
+/* Set some basic padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.converter-box {
+    max-width: 40rem;
+    margin: 3rem auto;
+    padding: 3rem;
+    background-color: #f3f3f3;
+}
+
+.currency-input {
+    border: none;
+    padding: 0.5rem 2rem;
+    height: 4rem;
+}
+
+.converter-text {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    font-size: 10px;
+}
+
+.converter-btn {
+    border: none;
+    height: 4rem;
+    width: 10rem;
+    background-color: #6ac96b;
+}

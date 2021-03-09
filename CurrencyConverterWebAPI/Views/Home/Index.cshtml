@@ -1,0 +1,85 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+
+<div class="text-center converter-box">
+    <input id="inputValue" placeholder="Amount (GBP)" class="currency-input" />
+
+    <div style="height: 6rem;">
+        <div id="outputResult" class="converter-text" style="font-weight:700;"></div>
+        <div id="countdownReadout" class="converter-text"></div>
+    </div>
+    <button onclick="getExchangeData()" class="converter-btn">Convert</button>
+</div>
+
+<script>
+
+    var seconds = -1;
+    var countdownTimer;
+    function updateTimer() {
+        if (seconds > 0) {
+            var minutes = Math.round((seconds - 30) / 60);
+            var remainingSeconds = seconds % 60;
+            if (remainingSeconds < 10) {
+                remainingSeconds = "0" + remainingSeconds;
+            }
+            document.getElementById('countdownReadout').innerHTML = "Expires in <span style='font-weight:700;'>" + minutes + " mins, " + remainingSeconds + " seconds</span>";
+            seconds--;
+        } else if (seconds == 0) {
+            document.getElementById('countdownReadout').innerHTML = "Data Expired";
+        } else {
+            // Initial State
+            document.getElementById('countdownReadout').innerHTML = "";
+        }
+    }
+    
+    function getExchangeData() {
+        var inputVal = $('#inputValue').val();
+        var sendCall = true;
+        if (inputVal.length == 0) {
+            $('#outputResult').html('You must input a numeric value');
+            sendCall = false;
+        }
+        var parsedFloat = parseFloat(inputVal);
+        console.log(parsedFloat + '');
+        if (sendCall && isNaN(parsedFloat)) {
+            $('#outputResult').html(inputVal + ' is not a number');
+            sendCall = false;
+        }
+        if (sendCall) {
+            $('#outputResult').html("");
+            $.ajax({
+                url: "https://api.exchangerate-api.com/v4/latest/GBP",
+                type: 'GET',
+                success: function (res) {
+                    console.log(res);
+                    seconds = 600;
+                    countdownTimer = setInterval('updateTimer()', 1000);
+                    updateTimer(); // run it once, just to make the reaction-time a bit snappier.
+                    translateExchangeData(res);
+                },
+                error: function () {
+                    $('#outputResult').html("Sorry, something went wrong");
+                }
+            });
+        }
+    }
+
+    function translateExchangeData(data) {
+        var inputVal = $('#inputValue').val();
+        var parsedValue = parseFloat(inputVal);
+        var rates = data.rates;
+        if (rates) {
+            var aud = rates.AUD;
+            var calculatedValue = parsedValue * aud;
+            var readout = '' + parsedValue.toLocaleString("en-EN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "GBP is the equivalent of " + calculatedValue.toLocaleString("en-EN", { minimumFractionDigits: 2,maximumFractionDigits: 2 }) + "AUD";
+
+            $('#outputResult').html(readout);
+            console.log('success');
+        } else {
+            $('#outputResult').html("Sorry, something went wrong");
+            console.log('fail');
+        }
+    }
+</script>
